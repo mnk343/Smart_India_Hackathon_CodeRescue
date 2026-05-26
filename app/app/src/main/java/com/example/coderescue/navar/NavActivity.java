@@ -16,17 +16,10 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
-import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.Places;
-import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.model.LatLng;
 import com.example.coderescue.navar.utils.UtilsCheck;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import com.example.coderescue.R;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -48,17 +41,11 @@ public class NavActivity extends AppCompatActivity implements GoogleApiClient.Co
     private LatLng srcLatLong;
     private LatLng destLatLong;
 
-    @BindView(R.id.source_pick_btn)
     Button sourcePickBtn;
-    @BindView(R.id.dest_pick_btn)
     Button destPickBtn;
-    @BindView(R.id.nav_start_btn)
     Button navStartBtn;
-    @BindView(R.id.source_result_text)
     TextView sourceResultText;
-    @BindView(R.id.dest_result_text)
     TextView destResultText;
-    @BindView(R.id.non_ar_nav_start_btn)
     Button mapNavStartBtn;
 
     @Override
@@ -67,13 +54,16 @@ public class NavActivity extends AppCompatActivity implements GoogleApiClient.Co
 
         mGoogleApiClient = new GoogleApiClient
                 .Builder(this)
-                .addApi(Places.GEO_DATA_API)
-                .addApi(Places.PLACE_DETECTION_API)
                 .enableAutoManage(this, this)
                 .build();
 
         setContentView(R.layout.activity_nav);
-        ButterKnife.bind(this);
+        sourcePickBtn = findViewById(R.id.source_pick_btn);
+        destPickBtn = findViewById(R.id.dest_pick_btn);
+        navStartBtn = findViewById(R.id.nav_start_btn);
+        sourceResultText = findViewById(R.id.source_result_text);
+        destResultText = findViewById(R.id.dest_result_text);
+        mapNavStartBtn = findViewById(R.id.non_ar_nav_start_btn);
 
         if(!UtilsCheck.isNetworkConnected(this)){
             Snackbar mySnackbar = Snackbar.make(findViewById(R.id.nav_coord_layout),
@@ -98,24 +88,14 @@ public class NavActivity extends AppCompatActivity implements GoogleApiClient.Co
         sourcePickBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                try {
-                    PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
-                    startActivityForResult(builder.build(NavActivity.this), SOURCE_PLACE_PICKER_REQUEST);
-                }catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e){
-                    Log.d(TAG, "onClick: "+e.getMessage());
-                }
+                Toast.makeText(NavActivity.this, "Place Picker not available", Toast.LENGTH_SHORT).show();
             }
         });
 
         destPickBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                try {
-                    PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
-                    startActivityForResult(builder.build(NavActivity.this), DEST_PLACE_PICKER_REQUEST);
-                }catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e){
-                    Log.d(TAG, "onClick: "+e.getMessage());
-                }
+                Toast.makeText(NavActivity.this, "Place Picker not available", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -153,7 +133,6 @@ public class NavActivity extends AppCompatActivity implements GoogleApiClient.Co
 
                     intent = new Intent(android.content.Intent.ACTION_VIEW,
                             Uri.parse( builder.build().toString()));
-                                    //"http://maps.google.com/maps?saddr=20.344,34.34&daddr=20.5666,45.345"));
                     startActivity(intent);
                 }catch (Exception e){
                     Log.d(TAG, "onClick: mapNav Exception caught");
@@ -179,30 +158,8 @@ public class NavActivity extends AppCompatActivity implements GoogleApiClient.Co
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
         super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-
-            case SOURCE_PLACE_PICKER_REQUEST:
-                if (resultCode == RESULT_OK) {
-                    Place place = PlacePicker.getPlace(data, this);
-                    String srcRes = String.format("%s", place.getName());
-                    sourceResultText.setText(srcRes);
-                    srcLatLong = place.getLatLng();
-                    Toast.makeText(this, srcRes, Toast.LENGTH_LONG).show();
-                }
-                break;
-            case DEST_PLACE_PICKER_REQUEST:
-                if (resultCode == RESULT_OK) {
-                    Place place = PlacePicker.getPlace(data, this);
-                    String destRes = String.format("%s", place.getName());
-                    destResultText.setText(destRes);
-                    destLatLong = place.getLatLng();
-                    Toast.makeText(this, destRes, Toast.LENGTH_LONG).show();
-                }
-                break;
-
-        }
+        // PlacePicker removed — onActivityResult is now a no-op for place picking
     }
 
     @Override

@@ -34,10 +34,6 @@ import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 
-import com.beyondar.android.view.OnClickBeyondarObjectListener;
-import com.beyondar.android.world.BeyondarObject;
-import com.beyondar.android.world.GeoObject;
-import com.beyondar.android.world.World;
 import com.example.coderescue.Activities.BeyondARWorld;
 import com.example.coderescue.Activities.CameraWithGoogleMapsActivity;
 import com.example.coderescue.Fragments.HomeFragment;
@@ -50,9 +46,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.maps.android.SphericalUtil;
-import com.example.coderescue.navar.ar.ArBeyondarGLSurfaceView;
-import com.example.coderescue.navar.ar.ArFragmentSupport;
-import com.example.coderescue.navar.ar.OnTouchBeyondarViewListenerMod;
 import com.example.coderescue.navar.network.PlaceResponse;
 import com.example.coderescue.navar.network.PoiResponse;
 import com.example.coderescue.navar.network.RetrofitInterface;
@@ -75,8 +68,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -90,8 +81,7 @@ import static android.graphics.Paint.ANTI_ALIAS_FLAG;
 import static com.mongodb.client.model.Filters.eq;
 
 public class PoiBrowserActivity extends FragmentActivity implements GoogleApiClient.ConnectionCallbacks
-    ,GoogleApiClient.OnConnectionFailedListener,OnClickBeyondarObjectListener,
-        OnTouchBeyondarViewListenerMod{
+    ,GoogleApiClient.OnConnectionFailedListener {
 
     private final static String TAG="PoiBrowserActivity";
 
@@ -99,36 +89,33 @@ public class PoiBrowserActivity extends FragmentActivity implements GoogleApiCli
     private Location mLastLocation;
     private GoogleApiClient mGoogleApiClient;
     private LayoutInflater layoutInflater;
-    private ArFragmentSupport arFragmentSupport;
-    private World world;
     public static RemoteMongoClient mongoClient;
 
-    @BindView(R.id.poi_place_detail)
     CardView poi_cardview;
-    @BindView(R.id.poi_place_close_btn)
     ImageButton poi_cardview_close_btn;
-    @BindView(R.id.poi_place_name)
     TextView poi_place_name;
-    @BindView(R.id.poi_place_address)
     TextView poi_place_addr;
-    @BindView(R.id.poi_place_image)
     ImageView poi_place_image;
-    @BindView(R.id.poi_place_ar_direction)
     Button poi_place_ar_btn;
-    @BindView(R.id.poi_place_maps_direction)
     Button poi_place_maps_btn;
-    @BindView(R.id.poi_brwoser_progress)
     ProgressBar poi_browser_progress;
 //    @BindView(R.id.seekBar)
 //    SeekBar seekbar;
-    @BindView(R.id.seekbar_cardview)
     CardView seekbar_cardview;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_poi_browser);
-        ButterKnife.bind(this);
+        poi_cardview = findViewById(R.id.poi_place_detail);
+        poi_cardview_close_btn = findViewById(R.id.poi_place_close_btn);
+        poi_place_name = findViewById(R.id.poi_place_name);
+        poi_place_addr = findViewById(R.id.poi_place_address);
+        poi_place_image = findViewById(R.id.poi_place_image);
+        poi_place_ar_btn = findViewById(R.id.poi_place_ar_direction);
+        poi_place_maps_btn = findViewById(R.id.poi_place_maps_direction);
+        poi_browser_progress = findViewById(R.id.poi_brwoser_progress);
+        seekbar_cardview = findViewById(R.id.seekbar_cardview);
 
         seekbar_cardview.setVisibility(View.GONE);
         poi_browser_progress.setVisibility(View.GONE);
@@ -140,9 +127,10 @@ public class PoiBrowserActivity extends FragmentActivity implements GoogleApiCli
             mySnackbar.show();
         }
 
-        arFragmentSupport = (ArFragmentSupport) getSupportFragmentManager().findFragmentById(R.id.poi_cam_fragment);
-        arFragmentSupport.setOnClickBeyondarObjectListener(this);
-        arFragmentSupport.setOnTouchBeyondarViewListener(this);
+        // AR fragment setup disabled - BeyondAR library removed
+        // arFragmentSupport = (ArFragmentSupport) getSupportFragmentManager().findFragmentById(R.id.poi_cam_fragment);
+        // arFragmentSupport.setOnClickBeyondarObjectListener(this);
+        // arFragmentSupport.setOnTouchBeyondarViewListener(this);
 
 
         textView=(TextView) findViewById(R.id.loading_text);
@@ -202,8 +190,10 @@ public class PoiBrowserActivity extends FragmentActivity implements GoogleApiCli
                     poi_browser_progress.setVisibility(View.GONE);
                     seekbar_cardview.setVisibility(View.VISIBLE);
 
-                    List<GeoObject> poiResult=BeyondARWorld.listVictims;
-                    Configure_AR(poiResult);
+                    // AR rendering disabled - BeyondAR GeoObject no longer available
+                    // List<GeoObject> poiResult=BeyondARWorld.listVictims;
+                    // Configure_AR(poiResult);
+                    Log.d(TAG, "Poi_list_call: AR display not available (library removed)");
                 }
             }
         }));
@@ -457,90 +447,11 @@ Log.d(TAG, placeid);
         }
     }
 
-    private void Configure_AR(List<GeoObject> pois){
-
-        layoutInflater=getLayoutInflater();
-
-        world=new World(getApplicationContext());
-        world.setGeoPosition(mLastLocation.getLatitude(),mLastLocation.getLongitude());
-
-        System.out.println(mLastLocation.getLatitude() + " " + mLastLocation.getLongitude());
-        world.setDefaultImage(R.drawable.ar_sphere_default);
-
-        arFragmentSupport.getGLSurfaceView().setPullCloserDistance(0);
-
-        GeoObject geoObjects[]=new GeoObject[pois.size()];
-
-        for(int i=0;i<pois.size();i++) {
-            GeoObject poiGeoObj = new GeoObject(1000 * (i + 1));
-//            poiGeoObj = pois.get(i);
-            poiGeoObj.setGeoPosition(pois.get(i).getLatitude(),
-                    pois.get(i).getLongitude());
-            poiGeoObj.setName( poiGeoObj.getLatitude() + "_" + poiGeoObj.getLongitude() + "_" + poiGeoObj.getId() );
-//
-            Bitmap snapshot = null;
-            View view = getLayoutInflater().inflate(R.layout.poi_container, null);
-            TextView name = (TextView) view.findViewById(R.id.poi_container_name);
-            TextView dist = (TextView) view.findViewById(R.id.poi_container_dist);
-            ImageView icon = (ImageView) view.findViewById(R.id.poi_container_icon);
-
-            name.setText(pois.get(i).getName());
-            String distance = String.valueOf((SphericalUtil.computeDistanceBetween(
-                    new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()),
-                    new LatLng(pois.get(i).getLatitude(),
-                            pois.get(i).getLongitude()))) / 1000);
-            String d = distance + " KM";
-            dist.setText(d);
-            Log.d(TAG, "hey bunny " + d);
-
-            String type = getResources().getString(R.string.restaurant);
-            icon.setImageResource(R.drawable.map_icon);
-
-            view.setDrawingCacheEnabled(false);
-            view.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_LOW);
-            try {
-                //  Paint paint = new Paint(ANTI_ALIAS_FLAG);
-//                paint.setTextSize(textSize);
-//                paint.setColor(textColor);
-                //paint.setTextAlign(Paint.Align.LEFT);
-//                float baseline = -paint.ascent(); // ascent() is negative
-//                int width = (int) (paint.measureText(pois.get(i).getName()) + 0.5f); // round
-//                int height = (int) (baseline + paint.descent() + 0.5f);
-
-                view.measure(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
-                snapshot = Bitmap.createBitmap(view.getMeasuredWidth(), view.getMeasuredHeight()
-                        , Bitmap.Config.ARGB_8888);
-                Canvas canvas = new Canvas(snapshot);
-                view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
-                view.draw(canvas);
-
-                //canvas.drawBitmap(snapshot);
-                //snapshot = Bitmap.createBitmap(view.getDrawingCache(),10,10,200,100); // You can tell how to crop the snapshot and whatever in this method
-            }  finally {
-                view.setDrawingCacheEnabled(false);
-            }
-
-            String uri = saveToInternalStorage(snapshot, pois.get(i).getId() + ".png");
-            //icon.setImageURI(Uri.parse(uri));
-            poiGeoObj.setImageUri(uri);
-            world.addBeyondarObject(poiGeoObj);
-            Log.d(TAG, "hello honey bunny " + i + " " + poiGeoObj.getId());
-
-        }
-
-                Log.d(TAG, "no of objects in the world "  + mLastLocation.getLatitude()+ " " + mLastLocation.getLongitude());
-        Log.d(TAG, "no of objects in the world "  + world.getBeyondarObjectLists().size());
-        Log.d(TAG, "no of objects also in the world "  + world.getBeyondarObjectLists().get(0).size() );
-        for( BeyondarObject i1 : world.getBeyondarObjectLists().get(0)){
-            Log.d(TAG, "hurray  "  +  i1.getName() );
-
-        }
-
+    private void Configure_AR(List<?> pois){
+        // AR rendering disabled - BeyondAR library removed from build
+        Log.d(TAG, "Configure_AR: AR rendering not available (library removed)");
         textView.setVisibility(View.INVISIBLE);
-
-        // ... and send it to the fragment
-        arFragmentSupport.setWorld(world);
- }
+    }
 
     private String saveToInternalStorage(Bitmap bitmapImage,String name){
         ContextWrapper cw = new ContextWrapper(getApplicationContext());
@@ -659,13 +570,6 @@ Log.d(TAG, placeid);
     }
 
     @Override
-    public void onClickBeyondarObject(ArrayList<BeyondarObject> beyondarObjects) {
-        if (beyondarObjects.size() > 0) {
-            Poi_details_call(beyondarObjects.get(0).getName());
-        }
-    }
-
-    @Override
     public void onConnectionSuspended(int i) {
 
     }
@@ -673,45 +577,5 @@ Log.d(TAG, placeid);
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
-    }
-
-
-    @Override
-    public void onTouchBeyondarView(MotionEvent event, ArBeyondarGLSurfaceView var2) {
-
-        float x = event.getX();
-        float y = event.getY();
-
-        ArrayList<BeyondarObject> geoObjects = new ArrayList<BeyondarObject>();
-
-        // This method call is better to don't do it in the UI thread!
-        // This method is also available in the BeyondarFragment
-        var2.getBeyondarObjectsOnScreenCoordinates(x, y, geoObjects);
-
-        String textEvent = "";
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                textEvent = "Event type ACTION_DOWN: ";
-                break;
-            case MotionEvent.ACTION_UP:
-                textEvent = "Event type ACTION_UP: ";
-                break;
-            case MotionEvent.ACTION_MOVE:
-                textEvent = "Event type ACTION_MOVE: ";
-                break;
-            default:
-                break;
-        }
-
-        Iterator<BeyondarObject> iterator = geoObjects.iterator();
-        while (iterator.hasNext()) {
-            BeyondarObject geoObject = iterator.next();
-            textEvent = textEvent + " " + geoObject.getName();
-            Log.d(TAG, "onTouchBeyondarView: ATTENTION !!! "+textEvent);
-
-            // ...
-            // Do something
-            // ...
-        }
     }
 }

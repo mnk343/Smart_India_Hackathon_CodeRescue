@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def hello_world():
-   client = MongoClient('mongodb+srv://coderescue:sih2020@trycluster-rfees.mongodb.net/test?retryWrites=true&w=majority&ssl=true&ssl_cert_reqs=CERT_NONE' , ssl = True)
+   client = MongoClient('mongodb://localhost:27017/')
    args = request.args
    disaster_id = ""
    remarks = ""
@@ -51,6 +51,6 @@ def hello_world():
    return jsonify({"status": "Added successfully"}), 200
 
 if __name__ == '__main__':
-   app.run(debug=True, use_reloader=False)
+   app.run(debug=True, use_reloader=False, port=5001)
 
 

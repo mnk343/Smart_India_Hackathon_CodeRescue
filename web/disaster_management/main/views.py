@@ -5,8 +5,7 @@ from django.urls import reverse
 import pymongo
 from pymongo import MongoClient
 from datetime import datetime
-from graphos.sources.simple import SimpleDataSource
-from graphos.renderers.gchart import LineChart
+# graphos removed (not compatible with Django 4.x)
 from django.template.loader import render_to_string
 import requests
 
@@ -18,8 +17,7 @@ locations = ["Andhra Pradesh","Arunachal Pradesh ","Assam","Bihar","Chhattisgarh
 "Lakshadweep","Delhi","Puducherry"]
 
 def connect():
-    client = MongoClient('mongodb+srv://coderescue:sih2020@trycluster-rfees.mongodb.net/test?retryWrites=true&w=majority&ssl=true&ssl_cert_reqs=CERT_NONE' , ssl = True)
-    # client = MongoClient('mongodb+srv://user:user@sih-jhvxc.mongodb.net/test?retryWrites=true&w=majority')
+    client = MongoClient('mongodb://localhost:27017/')
     return client
 
 def index(request , latitude='' , longitude='' , cityUser=''):
@@ -27,7 +25,7 @@ def index(request , latitude='' , longitude='' , cityUser=''):
     client = connect()
     print(latitude)
     print(longitude)
-    if request.session.has_key('locationIndex'):
+    if 'locationIndex' in request.session:
         context['locationIndex'] = request.session['locationIndex']
         print(context['locationIndex'])
         context['locationName'] = request.session['locationName']
@@ -50,7 +48,7 @@ def index(request , latitude='' , longitude='' , cityUser=''):
 
     context['data'] = data
 
-    if request.session.has_key('locationIndex'):
+    if 'locationIndex' in request.session:
         loc_no = int(request.session['locationIndex'])
         db = client.main.notification
         print("connected")
@@ -253,7 +251,7 @@ def all_disasters(request):
     return render(request, 'headquarters/disasters.html', context)
 
 def change_active_status(request):
-    if request.is_ajax and request.method == "POST":
+    if request.method == "POST" and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         data = request.POST
         status = int(data['status'])
         id = data['id']
@@ -284,7 +282,7 @@ def add_disaster(request):
         print("From received")
         client = connect()
         db = client.main.disaster
-        id = db.count() + 1
+        id = db.count_documents({}) + 1
         location = []
         for loc in request.POST.getlist('location'):
             if loc != '':
@@ -474,7 +472,7 @@ def update_statistics(request, disaster_id):
         return HttpResponseRedirect(reverse('main:headquarters_dashboard'))
 
 def get_new_notifications(request, loc_no):
-    if request.is_ajax and request.method == "GET":
+    if request.method == "GET" and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         if 'lastNotification' not in request.session:
             client = connect()
             db = client.main.notification

@@ -1,25 +1,14 @@
 package com.example.coderescue.navar.onboarding;
 
-import android.app.ActionBar;
-import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.Bundle;
-import android.os.PersistableBundle;
-import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
-
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.github.paolorotolo.appintro.AppIntro;
 import com.github.paolorotolo.appintro.AppIntroFragment;
+import com.github.paolorotolo.appintro.model.SliderPage;
 import com.example.coderescue.R;
-
-/**
- * Created by Amal Krishnan on 25-05-2017.
- */
 
 public class DefaultIntro extends AppIntro {
 
@@ -28,26 +17,26 @@ public class DefaultIntro extends AppIntro {
         super.onCreate(savedInstanceState);
         getSupportActionBar().hide();
 
-        addSlide(AppIntroFragment.newInstance(getResources().getString(R.string.slide1_title)
-                ,getResources().getString(R.string.slide1_desc)
-                ,R.drawable.slide1
-                ,getResources().getColor(R.color.white)
-                ,getResources().getColor(R.color.colorPrimary)
-                ,getResources().getColor(R.color.colorPrimaryDark)));
+        SliderPage page1 = new SliderPage();
+        page1.setTitle(getResources().getString(R.string.slide1_title));
+        page1.setDescription(getResources().getString(R.string.slide1_desc));
+        page1.setImageDrawable(R.drawable.slide1);
+        page1.setBgColor(getResources().getColor(R.color.colorPrimary));
+        addSlide(AppIntroFragment.newInstance(page1));
 
-        addSlide(AppIntroFragment.newInstance(getResources().getString(R.string.slide2_title)
-                ,getResources().getString(R.string.slide2_desc)
-                ,R.drawable.slide2
-                ,getResources().getColor(R.color.white)
-                ,getResources().getColor(R.color.colorPrimary)
-                ,getResources().getColor(R.color.colorPrimaryDark)));
+        SliderPage page2 = new SliderPage();
+        page2.setTitle(getResources().getString(R.string.slide2_title));
+        page2.setDescription(getResources().getString(R.string.slide2_desc));
+        page2.setImageDrawable(R.drawable.slide2);
+        page2.setBgColor(getResources().getColor(R.color.colorPrimary));
+        addSlide(AppIntroFragment.newInstance(page2));
 
-        addSlide(AppIntroFragment.newInstance(getResources().getString(R.string.slide3_title)
-                ,getResources().getString(R.string.slide3_desc)
-                ,R.drawable.slide3
-                ,getResources().getColor(R.color.white)
-                ,getResources().getColor(R.color.colorPrimary)
-                ,getResources().getColor(R.color.colorPrimaryDark)));
+        SliderPage page3 = new SliderPage();
+        page3.setTitle(getResources().getString(R.string.slide3_title));
+        page3.setDescription(getResources().getString(R.string.slide3_desc));
+        page3.setImageDrawable(R.drawable.slide3);
+        page3.setBgColor(getResources().getColor(R.color.colorPrimary));
+        addSlide(AppIntroFragment.newInstance(page3));
 
         setBarColor(getResources().getColor(R.color.colorAccent));
         showSkipButton(false);
@@ -64,5 +53,4 @@ public class DefaultIntro extends AppIntro {
         super.onDonePressed(currentFragment);
         finish();
     }
-
 }

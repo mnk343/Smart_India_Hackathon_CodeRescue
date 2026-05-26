@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.coderescue">
+    xmlns:tools="http://schemas.android.com/tools">
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
          Google Maps Android API v2, but you must specify either coarse or fine
@@ -36,7 +35,8 @@
         android:windowSoftInputMode="adjustPan"
         tools:targetApi="m">
         <activity android:name=".Activities.ViewSafeHousesActivity"></activity>
-        <activity android:name=".Activities.SplashScreenActivity">
+        <activity android:name=".Activities.SplashScreenActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -98,7 +98,8 @@
             android:name=".Activities.RescueTeamLoginActivity"
             android:theme="@style/AppTheme.NoActionBar" />
 
-        <receiver android:name=".Classes.ReceiveMessageUtility">
+        <receiver android:name=".Classes.ReceiveMessageUtility"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>

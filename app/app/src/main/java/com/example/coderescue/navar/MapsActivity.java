@@ -42,8 +42,6 @@ import com.example.coderescue.navar.utils.PermissionCheck;
 
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
@@ -69,26 +67,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private Marker RevMarker;
 
-    @BindView(R.id.fab_menu_btn)
     FloatingActionMenu fab_menu;
-    @BindView(R.id.ar_nav_btn)
     com.github.clans.fab.FloatingActionButton ar_nav_btn;
-    @BindView(R.id.poi_browser_btn)
     com.github.clans.fab.FloatingActionButton poi_browser_btn;
-    @BindView(R.id.decode_box)
     EditText decode_editText;
-    @BindView(R.id.decode_btn)
     Button decode_button;
-    @BindView(R.id.progressBar_maps)
     ProgressBar progressBar;
-    @BindView(R.id.about_btn)
     com.github.clans.fab.FloatingActionButton about_btn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        ButterKnife.bind(this);
+        fab_menu = findViewById(R.id.fab_menu_btn);
+        ar_nav_btn = findViewById(R.id.ar_nav_btn);
+        poi_browser_btn = findViewById(R.id.poi_browser_btn);
+        decode_editText = findViewById(R.id.decode_box);
+        decode_button = findViewById(R.id.decode_btn);
+        progressBar = findViewById(R.id.progressBar_maps);
+        about_btn = findViewById(R.id.about_btn);
 
         Init_intro();
         PermissionCheck.initialPermissionCheckAll(this,this);

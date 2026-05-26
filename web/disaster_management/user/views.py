@@ -7,7 +7,7 @@ import os, ssl
 import main
 
 def connect():
-    client = MongoClient('mongodb+srv://coderescue:sih2020@trycluster-rfees.mongodb.net/test?retryWrites=true&w=majority&ssl=true&ssl_cert_reqs=CERT_NONE' , ssl = True)
+    client = MongoClient('mongodb://localhost:27017/')
     return client
 
 def login (request):
