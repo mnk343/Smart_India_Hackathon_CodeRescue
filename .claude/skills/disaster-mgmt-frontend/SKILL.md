@@ -7,6 +7,8 @@ The project contains a web and an android app.
 The web app is Django based using MongoDB as the database. We are not relying on Django ORMs for this project.
 So dont run makemigrations for app data changes. The models.py are empty and it should be as is.
 
+While development, add data in the mongoDB since the website appears empty otherwise.
+
 There are two different Mongo Databases, one client.main.* with app data and the other client.authorization.* with credentials for rescue team and admin.
 
 We depend on Bing maps to find distance matrix.
