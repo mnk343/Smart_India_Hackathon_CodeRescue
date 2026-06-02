@@ -27,3 +27,7 @@ Conventions:
 -> Coordinates of places are stored as STRINGS and not FLOATS.
 -> Location is ALWAYS an ARRAY even if there is just one location to be returned
 -> Use mongomock for testing and not pymongo. It seems the latter fails repeatedly!
+
+For notifications in Django, they are stored in client.main.notification and rendered via the index view. AJAX polling fires every 10 seconds and the session state determines whats new!
+
+Django templates are treating 0, "", None and empty lists as false in {% if %} blocks.
