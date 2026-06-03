@@ -9,6 +9,8 @@ So dont run makemigrations for app data changes. The models.py are empty and it 
 
 While development, add data in the mongoDB since the website appears empty otherwise.
 
+There are charts displayed at the end of the dashboard. Chart.js is already loaded in index.html which is used for the pie chart. You should prefer it for any new chart work since it is well-supported. Charts.js requires <canvas> elements and not <div> containers like in other charts, make a note of that.
+
 There are two different Mongo Databases, one client.main.* with app data and the other client.authorization.* with credentials for rescue team and admin.
 
 We depend on Bing maps to find distance matrix.
